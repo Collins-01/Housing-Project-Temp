@@ -1,0 +1,1 @@
+enum AuthStatus { SignUp, Login }
