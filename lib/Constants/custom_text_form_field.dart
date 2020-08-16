@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 
 class CustomTextFormField extends StatelessWidget {
-  CustomTextFormField(
-      {this.icon,
-      this.obscureText = false,
-      this.onSaved,
-      this.validator,
-      this.hintText,
-      this.keyboardType});
+  CustomTextFormField({
+    this.icon,
+    this.obscureText = false,
+    this.onSaved,
+    this.validator,
+    this.hintText,
+    this.keyboardType,
+    this.maxLenght,
+    this.maxLines,
+  });
   final Icon icon;
   final String hintText;
   final bool obscureText;
   final FormFieldValidator<String> validator;
   final FormFieldSetter<String> onSaved;
   final TextInputType keyboardType;
+  final int maxLenght;
+  final int maxLines;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -23,6 +28,8 @@ class CustomTextFormField extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
       ),
       child: TextFormField(
+        maxLength: maxLenght,
+        maxLines: maxLines,
         keyboardType: keyboardType,
         validator: validator,
         onSaved: onSaved,

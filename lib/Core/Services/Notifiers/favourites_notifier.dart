@@ -12,15 +12,6 @@ class FavouritesNotifier with ChangeNotifier {
   static List<Product> _favouritesList;
   List<Product> _productList;
 
-  toggleFavouriteStatus() {
-    int index;
-    // bool isCurrentlyFavourite = _productList[index].isFavourite;
-    // bool newFavouriteStatus = !isCurrentlyFavourite;
-    Product updatedProduct = Product().toJson();
-    _productList[index] = updatedProduct;
-    notifyListeners();
-  }
-
 // get elements by id function
 // check if isfavourites=favList for anyWhere
   favourites(Product product) async {

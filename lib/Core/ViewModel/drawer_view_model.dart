@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:housing_project/Core/Services/Apis/authenticate_api.dart';
 import 'package:housing_project/Core/Services/Notifiers/auth_notifier.dart';
-import 'package:housing_project/UIs/Views/user_profile_view.dart';
 import 'package:provider/provider.dart';
 
 class DrawerViewModel extends StatefulWidget {
@@ -13,7 +12,8 @@ class _DrawerViewModelState extends State<DrawerViewModel> {
   bool val;
   @override
   Widget build(BuildContext context) {
-    var authNotifier = Provider.of<AuthNotifier>(context, listen: false);
+    AuthNotifier authNotifier =
+        Provider.of<AuthNotifier>(context, listen: false);
     // var themeNotifier = Provider.of<ThemeNotifier>(context);
 
     return Drawer(
@@ -47,8 +47,7 @@ class _DrawerViewModelState extends State<DrawerViewModel> {
               }),
           InkWell(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (BuildContext context) => UserProfileView()));
+                Navigator.pushNamed(context, "/profile");
               },
               child: ListTile(
                 title: Text("Profile"),
@@ -59,8 +58,7 @@ class _DrawerViewModelState extends State<DrawerViewModel> {
               )),
           InkWell(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (BuildContext context) => UserProfileView()));
+                Navigator.pushNamed(context, "/favourites");
               },
               child: ListTile(
                 title: Text("Favourites"),
@@ -89,8 +87,9 @@ class _DrawerViewModelState extends State<DrawerViewModel> {
                             "By doing this,You will be Taken out this app and will require Password to LoginNext Time"),
                         actions: <Widget>[
                           InkWell(
-                            onTap: () =>
-                                signOutWithEmail(authNotifier, context),
+                            onTap: () async {
+                              await signOutWithEmail(authNotifier, context);
+                            },
                             child: Text(
                               "Accept",
                               style: TextStyle(

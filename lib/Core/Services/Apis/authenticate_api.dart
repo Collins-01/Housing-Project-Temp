@@ -7,7 +7,7 @@ import 'package:housing_project/Constants/enum.dart';
 import 'package:housing_project/Constants/flutter_toast_messages.dart';
 import 'package:housing_project/Core/Models/user_model.dart';
 import 'package:housing_project/Core/Services/Notifiers/auth_notifier.dart';
-import 'package:housing_project/UIs/Views/sign_in_view.dart';
+import 'package:housing_project/UIs/Views/authenticate_view.dart';
 import 'package:image_picker/image_picker.dart';
 
 Firestore database = Firestore.instance;
@@ -20,59 +20,33 @@ signUpWithEmailandPassword(UserModel userModel, AuthNotifier authNotifier,
       .createUserWithEmailAndPassword(
           email: userModel.userEmail, password: userModel.userPassword)
       .catchError((error) => print(error.code));
+  FirebaseUser currentUser = await FirebaseAuth.instance.currentUser();
   if (authResult != null) {
     UserUpdateInfo userUpdateInfo = UserUpdateInfo();
     userUpdateInfo.displayName = userModel.userName;
     userUpdateInfo.photoUrl = userModel.userProfilePicture;
     FirebaseUser firebaseUser = authResult.user;
+    String userId = firebaseUser.uid;
     await firebaseUser.updateProfile(userUpdateInfo);
+    await database
+        .collection("USERS")
+        .document("User-Data")
+        .collection(userId)
+        .add({
+      "User-Name": userModel.userName,
+      "User-ProfilePicture": userModel.userProfilePicture,
+      "User-Email": userModel.userEmail,
+      "User-Password": userModel.userPassword
+    });
     await firebaseUser.reload();
     print("Sign Up: $firebaseUser");
     FirebaseUser currentUser = await FirebaseAuth.instance.currentUser();
     // getting the current user from our firebase user
     authNotifier.setUser(currentUser);
-    Navigator.pushNamed(context, "/");
+    Navigator.pushNamed(context, "/homeView");
   }
   return;
 }
-
-// signUp(UserModel userModel, AuthNotifier authNotifier,
-//     BuildContext context) async {
-//   AuthResult result = await FirebaseAuth.instance
-//       .createUserWithEmailAndPassword(
-//           email: userModel.userEmail, password: userModel.userPassword);
-//   if (result != null) {
-//     await result.user.reload().then((auth) async {
-//       await database.collection("Auth Details").add({
-//         "UserName": userModel.userName,
-//         "UserEmail": userModel.userEmail,
-//         "UserPassworsd": userModel.userPassword,
-//         "UserProfilePicture": userModel.userProfilePicture
-//       });
-//       UserUpdateInfo userUpdateInfo = UserUpdateInfo();
-//       userUpdateInfo.displayName = userModel.userName;
-//       userUpdateInfo.photoUrl = userModel.userProfilePicture;
-//       FirebaseUser firebaseUser = result.user;
-//       await firebaseUser.updateProfile(userUpdateInfo);
-//       await firebaseUser.reload();
-//       print("Sign Up: $firebaseUser");
-//       print("Sign Up: ${firebaseUser.email}");
-//       print("Sign Up: ${firebaseUser.displayName}");
-//       print("Sign Up: ${firebaseUser.photoUrl}");
-//       print("Sign Up: ${firebaseUser.isEmailVerified}");
-//       print("Sign Up: ${firebaseUser.uid}");
-//       FirebaseUser currentUser = await FirebaseAuth.instance.currentUser();
-//       authNotifier.setUser(currentUser);
-//     }).whenComplete(() {
-//       Navigator.pushNamed(context, "/homeView");
-//     });
-//   } else {
-//     ToastMessages().showToast(
-//         "EMAIL ADDRESS IS NOT VERIFIED!!!,PLEASE MAKE SURE YOUR CREDENTIALS ARE CORRECT");
-//     print("Invalid Email address");
-//     return;
-// //   }
-// }
 
 // signUp with google
 // Sign In with Email and password
@@ -103,7 +77,7 @@ signOutWithEmail(AuthNotifier authNotifier, BuildContext context) async {
       .then(
         (nav) => Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (BuildContext context) => SignInView(),
+            builder: (BuildContext context) => AuthenticateView(),
           ),
         ),
       )
@@ -116,17 +90,5 @@ initializecurrentUser(AuthNotifier authNotifier) async {
   FirebaseUser firebaseUser = await FirebaseAuth.instance.currentUser();
   if (firebaseUser != null) {
     authNotifier.setUser(firebaseUser);
-  }
-}
-
-profilePicture(File imageFile) {
-  // ignore: deprecated_member_use
-  ImagePicker.pickImage(source: ImageSource.gallery, imageQuality: 50);
-  if (imageFile == null) {
-    return Center(
-      child: Icon(Icons.add_a_photo),
-    );
-  } else {
-    return Image.file(imageFile);
   }
 }
