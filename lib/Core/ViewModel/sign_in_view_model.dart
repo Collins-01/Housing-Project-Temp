@@ -54,7 +54,8 @@ class _SignInViewModelState extends State<SignInViewModel> {
                       ),
                       CustomTextFormField(
                         hintText: "Please Enter Your Email Address",
-                        onSaved: (String val) => userModel.userEmail = val,
+                        onSaved: (String val) =>
+                            setState(() => userModel.userEmail = val),
                         validator: (String val) {
                           Pattern pattern =
                               r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
@@ -65,8 +66,10 @@ class _SignInViewModelState extends State<SignInViewModel> {
                         },
                       ),
                       CustomTextFormField(
+                        obscureText: true,
                         hintText: "Please enter your Password!!",
-                        onSaved: (String val) => userModel.userEmail = val,
+                        onSaved: (String val) =>
+                            setState(() => userModel.userEmail = val),
                         validator: (String val) => val.length > 10 ||
                                 val.length < 8
                             ? "Please Enter a UserName 10 Chars max and 8+ less"
@@ -133,8 +136,15 @@ class _SignInViewModelState extends State<SignInViewModel> {
   }
 
   submitForm() {
+    var authNotifier = Provider.of<AuthNotifier>(context, listen: false);
     if (_formKey.currentState.validate()) {
       setState(() => loading = true);
+      signInWithEmailandPassword(userModel, authNotifier, context);
+      Navigator.pushNamed(context, "/homeView");
+    } else {
+      setState(() => loading = true);
+      print("Validation Error");
+      return;
     }
   }
 }

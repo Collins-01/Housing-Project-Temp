@@ -68,7 +68,8 @@ class _SignUpViewModelState extends State<SignUpViewModel> {
                                 ? "PLEASE ENTER A DISPLAY NAME,<10 CHARS & START WITH A CAMEL CASE"
                                 : null;
                           },
-                          onSaved: (String val) => userModel.userName = val,
+                          onSaved: (String val) =>
+                              userModel.userName = val.trimLeft(),
                         ),
                         CustomTextFormField(
                           hintText: "Please enter Your verified email address",
@@ -80,11 +81,14 @@ class _SignUpViewModelState extends State<SignUpViewModel> {
                                 ? "PLEASE ENTER A VALID EMAIL ADDRESS"
                                 : null;
                           },
-                          onSaved: (String val) => userModel.userEmail = val,
+                          onSaved: (String val) =>
+                              userModel.userEmail = val.trimLeft(),
                         ),
                         CustomTextFormField(
+                          obscureText: true,
                           hintText: "Please Enter Your Password",
-                          onSaved: (String val) => userModel.userPassword = val,
+                          onSaved: (String val) =>
+                              userModel.userPassword = val.trimLeft(),
                           validator: (String val) {
                             return val.isEmpty || val.length > 9
                                 ? "PLEASE ENTER A CORRECT PASSWORD"
@@ -172,7 +176,7 @@ class _SignUpViewModelState extends State<SignUpViewModel> {
       setState(() => loading = true);
       _key.currentState.save();
       await signUpWithEmailandPassword(userModel, authNotifier, context);
-      // Navigator.pushNamed(context, "/");
+      // Navigator.pushReplacementNamed(context, "/homeView");
 
       print("Form is Valid ");
     } else {

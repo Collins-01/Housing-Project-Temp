@@ -54,11 +54,11 @@ class ForgotPasswordViewModel extends StatelessWidget {
   }
 
   function() {
-    if (_formkey.currentState.validate()) {
-      _formkey.currentState.save();
-    } else {
-      print("invalid form");
-      return;
-    }
+    //   if (_formkey.currentState.validate()) {
+    //     _formkey.currentState.save();
+    //   } else {
+    //     print("invalid form");
+    //     return;
+    //   }
   }
 }
