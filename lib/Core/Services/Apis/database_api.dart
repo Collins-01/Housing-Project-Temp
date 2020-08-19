@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:housing_project/Core/Models/product_model.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -7,8 +6,6 @@ import 'package:housing_project/Core/Models/product_model.dart';
 class DatabaseApi {
   CollectionReference _collectionReference =
       Firestore.instance.collection("Products");
-  CollectionReference _userProfileCollectionReference =
-      Firestore.instance.collection("UserProfile");
   Stream<List<Product>> getUserList() {
     return _collectionReference.snapshots().map((snapShot) => snapShot.documents
         .map((document) => Product.fromJson(document.data, document.documentID))
@@ -17,10 +14,6 @@ class DatabaseApi {
 
   Future<QuerySnapshot> getFutureDataCollection() {
     return _collectionReference.getDocuments();
-  }
-
-  Stream<QuerySnapshot> fetchUserProfileData() async* {
-    yield* _userProfileCollectionReference.snapshots();
   }
 
   Stream<QuerySnapshot> getStreamdataCollection() async* {
@@ -44,16 +37,9 @@ class DatabaseApi {
   }
 
   Future<void> addDocument(Map map) async {
-    // String uid = (await FirebaseAuth.instance.currentUser()).uid;
     return _collectionReference.add(map);
   }
-
-  Future<void> addProfileDocument(Map map) async {
-    String uid = (await FirebaseAuth.instance.currentUser()).uid;
-    return _collectionReference
-        .document(uid)
-        .collection("USER")
-        .document()
-        .setData(map);
-  }
 }
+
+// Cllection/Document/Collection.addd(unique Id)
+// ProductList/UserId/User Posts/Document

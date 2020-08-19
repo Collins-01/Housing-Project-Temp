@@ -12,8 +12,7 @@ class _DrawerViewModelState extends State<DrawerViewModel> {
   bool val;
   @override
   Widget build(BuildContext context) {
-    AuthNotifier authNotifier =
-        Provider.of<AuthNotifier>(context, listen: false);
+    var authNotifier = Provider.of<AuthNotifier>(context);
     // var themeNotifier = Provider.of<ThemeNotifier>(context);
 
     return Drawer(
@@ -30,7 +29,7 @@ class _DrawerViewModelState extends State<DrawerViewModel> {
                     )),
               ),
             ),
-            accountName: Text(authNotifier.user.displayName),
+            // accountName: Text(authNotifier.user.displayName),
             accountEmail: Text(authNotifier.user.email),
           ),
           SizedBox(
@@ -88,7 +87,9 @@ class _DrawerViewModelState extends State<DrawerViewModel> {
                         actions: <Widget>[
                           InkWell(
                             onTap: () async {
-                              await signOutWithEmail(authNotifier, context);
+                              await authNotifier.signOutFromDevice(context);
+                              Navigator.of(context).pop();
+                              // signOutFromDevice();
                             },
                             child: Text(
                               "Accept",

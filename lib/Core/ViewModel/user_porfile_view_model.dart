@@ -20,7 +20,6 @@ class _UserProfileViewModelState extends State<UserProfileViewModel> {
   List<Product> productList;
   @override
   Widget build(BuildContext context) {
-    AuthNotifier authNotifier = AuthNotifier();
     var authProvider = Provider.of<AuthNotifier>(context);
     var productProvider = Provider.of<DatabaseNotf>(context);
 
@@ -43,7 +42,7 @@ class _UserProfileViewModelState extends State<UserProfileViewModel> {
                   FlatButton.icon(
                       onPressed: () async {
                         print("Logging Out");
-                        await signOutWithEmail(authNotifier, context);
+                        await authProvider.signOutFromDevice(context);
                       },
                       icon: Icon(Icons.person_outline),
                       label: Text("LogOut"))
@@ -69,11 +68,11 @@ class _UserProfileViewModelState extends State<UserProfileViewModel> {
                             ),
                           ),
                           SizedBox(height: 10),
-                          Text(
-                            authProvider.user.displayName,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
-                          ),
+                          // Text(
+                          //   authProvider.user.displayName,
+                          //   style: TextStyle(
+                          //       fontWeight: FontWeight.bold, fontSize: 20),
+                          // ),
                           Text(
                             authProvider.user.email,
                             style: TextStyle(fontWeight: FontWeight.w600),

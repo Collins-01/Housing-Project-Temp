@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   String uid;
   String userEmail;
@@ -28,7 +30,7 @@ class UserModel {
       "userName": userName,
       "userPassword": userPassword,
       "userEmail": userEmail,
-      "timeCreated": timeCreated,
+      "timeCreated": Timestamp.now().toDate(),
     };
   }
 }

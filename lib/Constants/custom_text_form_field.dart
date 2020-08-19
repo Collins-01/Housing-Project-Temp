@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CustomTextFormField extends StatelessWidget {
   CustomTextFormField({
     this.icon,
-    this.obscureText = false,
+    this.obscureText,
     this.onSaved,
     this.validator,
     this.hintText,
@@ -13,7 +13,7 @@ class CustomTextFormField extends StatelessWidget {
   });
   final Icon icon;
   final String hintText;
-  final bool obscureText;
+  bool obscureText = false;
   final FormFieldValidator<String> validator;
   final FormFieldSetter<String> onSaved;
   final TextInputType keyboardType;
@@ -28,6 +28,7 @@ class CustomTextFormField extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
       ),
       child: TextFormField(
+        // obscureText: obscureText,
         maxLength: maxLenght,
         maxLines: maxLines,
         keyboardType: keyboardType,

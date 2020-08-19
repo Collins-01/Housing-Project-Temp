@@ -50,21 +50,20 @@ class _ProductTemplateState extends State<ProductTemplate> {
                       color: Colors.red,
                     ),
                   ),
-                  trailing: Text(
-                    "${widget.product.timeStamp}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  // trailing: Text(
+                  //   "${widget.product.timeStamp}",
+                  //   style: TextStyle(
+                  //     fontWeight: FontWeight.w600,
+                  //   ),
+                  // ),
                   title: Text(
-                    authNotifier.user.displayName,
+                    "${widget.product.state},${widget.product.town}",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
                   ),
-                  subtitle:
-                      Text("${widget.product.state},${widget.product.town}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          )),
+                  subtitle: Text("${widget.product.timeStamp}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      )),
                 ),
               ),
             ),

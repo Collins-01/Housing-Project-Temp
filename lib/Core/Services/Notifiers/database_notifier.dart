@@ -17,6 +17,10 @@ class DatabaseNotf with ChangeNotifier {
     return productList;
   }
 
+  // Stream<QuerySnapshot> fetchUserProductsAsStream() async* {
+  //   yield* _databaseApi.fetchUserProfileData();
+  // }
+
   Stream<QuerySnapshot> fetchProductsAsStream() async* {
     yield* _databaseApi.getStreamdataCollection();
   }
@@ -25,10 +29,10 @@ class DatabaseNotf with ChangeNotifier {
     yield* _databaseApi.fetchRefreshedDocumentsAsStream();
   }
 
-  Stream<QuerySnapshot> userProfileData() async* {
-    // var profile=await _databaseApi.fetchUserProfileData();
-    yield* _databaseApi.fetchUserProfileData();
-  }
+  // Stream<QuerySnapshot> userProfileData() async* {
+  //   // var profile=await _databaseApi.fetchUserProfileData();
+  //   yield* _databaseApi.fetchUserProfileData();
+  // }
 
   Future<Product> getProductBtId(String id) async {
     var doc = await _databaseApi.getDocumentsById(id);

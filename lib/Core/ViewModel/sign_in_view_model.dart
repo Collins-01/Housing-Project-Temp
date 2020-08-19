@@ -20,28 +20,22 @@ class _SignInViewModelState extends State<SignInViewModel> {
   ToastMessages toastMessages = ToastMessages();
   UserModel userModel = new UserModel();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _rememberMeSwitch = false;
   Button button = Button();
   bool loading = false;
   bool obscureText = false;
 
   @override
-  initState() {
-    // getting the current user state before we load the page
-    AuthNotifier authNotifier =
-        Provider.of<AuthNotifier>(context, listen: false);
-    initializecurrentUser(authNotifier);
-    super.initState();
-  }
-
-  @override
   // ignore: missing_return
   Widget build(BuildContext context) {
+    var authNotifier = Provider.of<AuthNotifier>(context);
     var deviceHieght = MediaQuery.of(context).size.height;
 
-    return loading
+    return authNotifier.status == Status.Authenticating
         ? Loading()
         : Scaffold(
+            key: _scaffoldKey,
             body: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: Container(
@@ -69,10 +63,10 @@ class _SignInViewModelState extends State<SignInViewModel> {
                         obscureText: true,
                         hintText: "Please enter your Password!!",
                         onSaved: (String val) =>
-                            setState(() => userModel.userEmail = val),
+                            setState(() => userModel.userPassword = val),
                         validator: (String val) => val.length > 10 ||
-                                val.length < 8
-                            ? "Please Enter a UserName 10 Chars max and 8+ less"
+                                val.length < 6
+                            ? "Please Enter a UserName 10 Chars max and 6+ less"
                             : null,
                       ),
                       Container(
@@ -93,24 +87,33 @@ class _SignInViewModelState extends State<SignInViewModel> {
                             }),
                       ),
                       SizedBox(height: 13),
-                      raisedButton(submitForm, "Sign In", Colors.red),
-                      authStatus == AuthStatus.SignUp
-                          ? Container()
-                          : Align(
-                              alignment: Alignment.centerRight,
-                              child: InkWell(
-                                onTap: () {
-                                  print("forgot password");
-                                },
-                                child: Text(
-                                  "Forgot Password?        ",
-                                  style: TextStyle(
-                                      color: Colors.purple,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15),
-                                ),
-                              ),
-                            ),
+                      raisedButton(() async {
+                        if (_formKey.currentState.validate()) {
+                          _formKey.currentState.save();
+                          if (!await authNotifier.signInWithEmailAddress(
+                              userModel, context))
+                            _scaffoldKey.currentState.showSnackBar(SnackBar(
+                              backgroundColor: Color(0xffff414d0b),
+                              content: Text(
+                                  "An Error Occured While Signing In.Please Check your Internet and Make Sure Your Credentials Are Valid!!!"),
+                            ));
+                        }
+                      }, "Sign In", Colors.red),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: InkWell(
+                          onTap: () {
+                            print("forgot password");
+                          },
+                          child: Text(
+                            "Forgot Password?        ",
+                            style: TextStyle(
+                                color: Colors.purple,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15),
+                          ),
+                        ),
+                      ),
                       SizedBox(height: 30),
                       Align(
                         alignment: Alignment.centerLeft,
@@ -133,18 +136,5 @@ class _SignInViewModelState extends State<SignInViewModel> {
               ),
             ),
           );
-  }
-
-  submitForm() {
-    var authNotifier = Provider.of<AuthNotifier>(context, listen: false);
-    if (_formKey.currentState.validate()) {
-      setState(() => loading = true);
-      signInWithEmailandPassword(userModel, authNotifier, context);
-      Navigator.pushNamed(context, "/homeView");
-    } else {
-      setState(() => loading = true);
-      print("Validation Error");
-      return;
-    }
   }
 }

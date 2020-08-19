@@ -108,6 +108,8 @@ class _CreateDocumentsViewModelState extends State<CreateDocumentsViewModel> {
                       ),
                     ), // =====================Build Description Field=================
                     CustomTextFormField(
+                      maxLines: 4,
+                      maxLenght: 300,
                       hintText: "PLease Enter Your Description Here",
                       validator: (val) => val.isEmpty || val.length > 350
                           ? "Please he Description Placeholder musn't be empty"
@@ -117,6 +119,7 @@ class _CreateDocumentsViewModelState extends State<CreateDocumentsViewModel> {
 
                     // ======================Build Email Text Field==========
                     CustomTextFormField(
+                      keyboardType: TextInputType.emailAddress,
                       hintText: "*Required!!,Email Address",
                       validator: (String val) {
                         Pattern pattern =
@@ -130,6 +133,7 @@ class _CreateDocumentsViewModelState extends State<CreateDocumentsViewModel> {
                     ),
                     // ===================Build Price Text Field==========
                     CustomTextFormField(
+                      keyboardType: TextInputType.numberWithOptions(),
                       hintText: "Price is required!!",
                       validator: (val) => val.isEmpty || val.length > 9
                           ? "Please he Price Placeholder musn't be empty"
@@ -138,6 +142,7 @@ class _CreateDocumentsViewModelState extends State<CreateDocumentsViewModel> {
                     ),
                     // =========================user Phone No===============
                     CustomTextFormField(
+                      keyboardType: TextInputType.numberWithOptions(),
                       hintText: "Phone Number is required!!",
                       validator: (val) =>
                           val.isEmpty || val.length > 15 || val.length < 15

@@ -13,6 +13,7 @@ import 'package:housing_project/Core/Services/Notifiers/auth_notifier.dart';
 import 'package:housing_project/Utilities/loading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class SignUpViewModel extends StatefulWidget {
@@ -22,18 +23,20 @@ class SignUpViewModel extends StatefulWidget {
 
 class _SignUpViewModelState extends State<SignUpViewModel> {
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   AuthStatus authStatus = AuthStatus.Login;
   ToastMessages toastMessages = ToastMessages();
   UserModel userModel = new UserModel();
-  AuthNotifier authNotifier = AuthNotifier();
   Button _button = Button();
   File _imageFile;
   bool loading = false;
   @override
   Widget build(BuildContext context) {
-    return loading
+    var authNotifier = Provider.of<AuthNotifier>(context);
+    return authNotifier.status == Status.Authenticating
         ? Loading()
         : Scaffold(
+            key: _scaffoldKey,
             body: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: Center(
@@ -63,13 +66,14 @@ class _SignUpViewModelState extends State<SignUpViewModel> {
                           hintText: "Please Eneter Your Display name",
                           validator: (String val) {
                             return val.isEmpty ||
-                                    val.length > 10 ||
+                                    val.length > 13 ||
                                     !val.startsWith(RegExp(r'[A-Z]'))
-                                ? "PLEASE ENTER A DISPLAY NAME,<10 CHARS & START WITH A CAMEL CASE"
+                                ? "PLEASE ENTER A DISPLAY NAME,13 CHARS+ & START WITH A CAMEL CASE"
                                 : null;
                           },
-                          onSaved: (String val) =>
-                              userModel.userName = val.trimLeft(),
+                          onSaved: (String val) => setState(
+                            () => userModel.userName = val,
+                          ),
                         ),
                         CustomTextFormField(
                           hintText: "Please enter Your verified email address",
@@ -81,21 +85,37 @@ class _SignUpViewModelState extends State<SignUpViewModel> {
                                 ? "PLEASE ENTER A VALID EMAIL ADDRESS"
                                 : null;
                           },
-                          onSaved: (String val) =>
-                              userModel.userEmail = val.trimLeft(),
+                          onSaved: (String val) => setState(
+                            () => userModel.userEmail = val,
+                          ),
                         ),
                         CustomTextFormField(
                           obscureText: true,
                           hintText: "Please Enter Your Password",
-                          onSaved: (String val) =>
-                              userModel.userPassword = val.trimLeft(),
+                          onSaved: (String val) => setState(
+                            () => userModel.userPassword = val,
+                          ),
                           validator: (String val) {
                             return val.isEmpty || val.length > 9
                                 ? "PLEASE ENTER A CORRECT PASSWORD"
                                 : null;
                           },
                         ),
-                        _button.button(submitForm, "Sign Up", context),
+                        _button.button(() async {
+                          if (_key.currentState.validate()) {
+                            _key.currentState.save();
+                            if (!await authNotifier.signUpWithEmailAddress(
+                                userModel, context))
+                              _scaffoldKey.currentState.showSnackBar(
+                                SnackBar(
+                                  backgroundColor: Color(0xffff414d0b),
+                                  duration: Duration(seconds: 2),
+                                  content: Text(
+                                      "An error occured while signing Up.Please check your connection,and make sure your Credentials are valid"),
+                                ),
+                              );
+                          }
+                        }, "Sign Up", context),
                         InkWell(
                             onTap: () {
                               Navigator.pushNamed(context, "/signIn");
@@ -155,7 +175,7 @@ class _SignUpViewModelState extends State<SignUpViewModel> {
     );
   }
 
-  uploadProfilePicture() async {
+  Future<void> uploadProfilePicture() async {
     var localFile = path.extension(_imageFile.path);
     var uuid = Uuid().v4();
     StorageReference storageReference = FirebaseStorage.instance
@@ -171,20 +191,20 @@ class _SignUpViewModelState extends State<SignUpViewModel> {
             }));
   }
 
-  void submitForm() async {
-    if (_key.currentState.validate()) {
-      setState(() => loading = true);
-      _key.currentState.save();
-      await signUpWithEmailandPassword(userModel, authNotifier, context);
-      // Navigator.pushReplacementNamed(context, "/homeView");
-
-      print("Form is Valid ");
-    } else {
-      print("Form is not Valid ");
-      setState(() => loading = false);
-      return;
-    }
-  }
+  // void submitForm() async {
+  //   if (_key.currentState.validate()) {
+  //     _key.currentState.save();
+  //     if (!await authNotifier.signUpWithEmailAddress(userModel)) {
+  //       setState(() => loading = false);
+  //       _scaffoldKey.currentState.showSnackBar(SnackBar(
+  //         backgroundColor: Color(0xffff414d0b),
+  //         duration: Duration(seconds: 2),
+  //         content: Text(
+  //             "An error occured while signing Up.Please check your connection,and make sure your Credentials are valid"),
+  //       ));
+  //     }
+  //   }
+  // }
 }
 // https://github.com/Collins01-max/Housing-Project-Temp.git
 // https://github.com/Collins01-max/Housing-Project.git

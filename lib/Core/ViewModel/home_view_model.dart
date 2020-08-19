@@ -28,6 +28,7 @@ class _HomeViewModelState extends State<HomeViewModel> {
           // xhange refreshListOfProducts=true
           // setState(() {
           //   refreshListOfProducts = true;
+
           // });
           print("Refreshing List of Products");
         },
@@ -35,21 +36,14 @@ class _HomeViewModelState extends State<HomeViewModel> {
           child: StreamBuilder<QuerySnapshot>(
 
               // refreshListOfProducts=true?productProvider.fetchrefreshProductsAsStream:productProvider.fetchProductsAsSream
-              stream: refreshListOfProducts
-                  ? productProvider.fetchRefreshedProductsAsStream()
-                  : productProvider.fetchProductsAsStream(),
+              stream: productProvider.fetchProductsAsStream(),
               builder:
                   // ignore: missing_return
                   (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                 print("Stream Builder");
+                // print(_productList.length);
                 if (snapshot.hasData) {
-                  // Convert our new list of products to a list of data snapshots for each data and all to List
-                  _newProductList = snapshot.data.documents
-                      .map((document) =>
-                          Product.fromJson(document.data, document.documentID))
-                      .toList();
-
                   _productList = snapshot.data.documents
                       .map((docs) =>
                           Product.fromJson(docs.data, docs.documentID))
@@ -65,27 +59,26 @@ class _HomeViewModelState extends State<HomeViewModel> {
                         );
                       },
                       // if refreshProduct=true?_newProductList.lenght:_productList.lenght
-                      itemCount: refreshListOfProducts
-                          ? _newProductList
-                          : _productList.length,
+                      itemCount: _productList.length,
                       itemBuilder: (BuildContext context, index) {
                         return ProductTemplate(
                           // if refreshProductlist=true?_newProductList[index]:_productList[index]
-                          product: refreshListOfProducts
-                              ? _newProductList
-                              : _productList[index],
+                          product: _productList[index],
                         );
                       });
                 } else if (snapshot.hasData == null) {
                   return Center(child: Text("No Item on List!!!!!!"));
                 } else if (snapshot.connectionState ==
                     ConnectionState.waiting) {
+                  print("connection state==waiting");
                   return Loading();
                 } else if (snapshot.connectionState == ConnectionState.none) {
+                  print("No connection on the device");
                   return Center(
                       child: Text(
                           "No Internet Connection,Please Connect to a Network!!!!!!"));
                 } else {
+                  print("No data on the item List");
                   return Loading();
                 }
               }),

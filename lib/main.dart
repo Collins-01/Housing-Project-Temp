@@ -3,6 +3,7 @@ import 'package:housing_project/Core/Services/Notifiers/auth_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:housing_project/Core/Services/Notifiers/favourites_notifier.dart';
 import 'package:housing_project/Core/Services/Notifiers/theme_notifier.dart';
+import 'package:housing_project/Core/Services/wrap_page.dart';
 import 'package:housing_project/UIs/Views/authenticate_view.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
           create: (BuildContext context) => ThemeNotifier(),
         ),
         ChangeNotifierProvider(
-          create: (BuildContext context) => AuthNotifier(),
+          create: (BuildContext context) => AuthNotifier.initializeUser(),
         ),
         ChangeNotifierProvider(
             create: (BuildContext context) => DatabaseNotf()),
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.purple,
         ),
-        home: AuthenticateView(),
+        home: WrapPage(),
         // initialRoute: "/splashScreen",
         onGenerateRoute: GenerateRoutes.genereteRouteSettings,
       ),
